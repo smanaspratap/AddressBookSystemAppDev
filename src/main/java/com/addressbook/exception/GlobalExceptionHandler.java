@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Handles validation failures (HTTP 400 Bad Request)
+    // Handles validation failures
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseDTO> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
         List<ObjectError> errorList = exception.getBindingResult().getAllErrors();
@@ -27,6 +27,13 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.toList());
         
         ResponseDTO responseDTO = new ResponseDTO("Exception while processing REST Request", errMesg);
+        return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+    }
+
+    // Handles custom AddressBookException (e.g., ID Not Found)
+    @ExceptionHandler(AddressBookException.class)
+    public ResponseEntity<ResponseDTO> handleAddressBookException(AddressBookException exception) {
+        ResponseDTO responseDTO = new ResponseDTO("Exception while processing REST Request", exception.getMessage());
         return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
     }
 }
